@@ -1,0 +1,35 @@
+package com.example.MyShroom_backend.dto;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+@Data
+public class UploadPostDto {
+
+    private String title;
+
+    private String mushroomType;
+
+    private double latitude;
+
+    private double longitude;
+
+    private String description;
+
+    private String base64Img;
+
+    @JsonCreator
+    public UploadPostDto(@JsonProperty("title") String title, @JsonProperty("mushroomType") String mushroomType,
+                         @JsonProperty("latitude") double latitude, @JsonProperty("longitude") double longitude,
+                         @JsonProperty("description") String description,  @JsonProperty("base64Img") String base64Img){
+        System.out.println("la upload post dto in constructor");
+        this.title = title;
+        this.mushroomType = mushroomType;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.description = description;
+        this.base64Img = base64Img;
+    }
+}
