@@ -8,13 +8,19 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
+import com.example.MyShroom_backend.entity.UserEntity;
+import com.example.MyShroom_backend.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@AllArgsConstructor
 public class PostMapperImpl implements PostMapper {
 
+    private final UserRepository userRepository;
     @Override
     public PostDto entityToDto(PostEntity entity) {
         if ( entity == null ) {
@@ -30,6 +36,7 @@ public class PostMapperImpl implements PostMapper {
         String img = null;
         String date = null;
         String time = null;
+        Long userId = null;
 
         id = entity.getId();
         title = entity.getTitle();
@@ -43,8 +50,9 @@ public class PostMapperImpl implements PostMapper {
         }
         date = entity.getDate().toString();
         time = entity.getTime().toString();
+        userId = entity.getUser().getId();
 
-        return new PostDto( id, title, mushroomType, latitude, longitude, description, img, date, time );
+        return new PostDto( id, title, mushroomType, latitude, longitude, description, img, date, time, userId);
     }
 
     @Override
@@ -68,6 +76,14 @@ public class PostMapperImpl implements PostMapper {
         }
         postEntity.setDate(LocalDate.parse(dto.getDate()));
         postEntity.setTime(LocalTime.parse(dto.getTime()));
+        Optional<UserEntity> optionalUser = userRepository.findById(dto.getUserId());
+        if (optionalUser.isPresent()) {
+            UserEntity user = optionalUser.get();
+            postEntity.setUser(user);
+        }
+        else{
+            postEntity.setUser(null);
+        }
 
         return postEntity;
     }
@@ -93,6 +109,16 @@ public class PostMapperImpl implements PostMapper {
         }
         postEntity.setDate(LocalDate.now());
         postEntity.setTime(LocalTime.now());
+
+        Optional<UserEntity> optionalUser = userRepository.findById(dto.getUserId());
+        if (optionalUser.isPresent()) {
+            UserEntity user = optionalUser.get();
+            postEntity.setUser(user);
+        }
+        else{
+            postEntity.setUser(null);
+        }
+
 
         return postEntity;
     }

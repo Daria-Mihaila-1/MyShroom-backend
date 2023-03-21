@@ -37,4 +37,6 @@ public class PostDto {
 
     private String time;
 
+    private Long userId;
+
 }

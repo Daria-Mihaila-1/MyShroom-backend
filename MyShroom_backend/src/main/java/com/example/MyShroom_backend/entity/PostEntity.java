@@ -39,4 +39,8 @@ public class PostEntity {
     @Column
     private LocalTime time;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id",nullable = false)
+    private UserEntity user;
+
 }

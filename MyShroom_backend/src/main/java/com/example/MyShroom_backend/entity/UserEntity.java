@@ -4,6 +4,9 @@ package com.example.MyShroom_backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 @Entity
 @Data
 @Table(name="users", uniqueConstraints = {
@@ -31,4 +34,8 @@ public class UserEntity {
 
     @Column
     private int strikes;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    private Set<PostEntity> posts = new TreeSet<PostEntity>();
 }

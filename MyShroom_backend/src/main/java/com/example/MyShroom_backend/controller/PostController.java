@@ -6,7 +6,11 @@ import com.example.MyShroom_backend.dto.UploadPostDto;
 import com.example.MyShroom_backend.dto.UserDto;
 import com.example.MyShroom_backend.entity.PostEntity;
 import com.example.MyShroom_backend.service.PostService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.hibernate.ObjectNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -35,6 +39,26 @@ public class PostController {
         System.out.println("da macar sunt aici");
 
         return ResponseEntity.ok(postService.addPost(dto));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+        try{
+            return ResponseEntity.ok( postService.deletePost(id));
+        }
+        catch (EntityNotFoundException  e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updatePost(@RequestBody PostDto dto) {
+        try{
+            return ResponseEntity.ok( postService.updatePost(dto));
+        }
+        catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
 
