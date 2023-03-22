@@ -1,20 +1,12 @@
 package com.example.MyShroom_backend.controller;
 
-import com.example.MyShroom_backend.dto.PostDto;
-import com.example.MyShroom_backend.dto.RegisterResponseDto;
-import com.example.MyShroom_backend.dto.UploadPostDto;
-import com.example.MyShroom_backend.dto.UserDto;
-import com.example.MyShroom_backend.entity.PostEntity;
+import com.example.MyShroom_backend.dto.*;
 import com.example.MyShroom_backend.service.PostService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +52,22 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @PutMapping("/add-attachments")
+    public ResponseEntity<?> addAttachments(@RequestBody DocumentsDto dto) {
+        return ResponseEntity.ok(postService.addAttachments(dto.getPostId(), dto.getDocuments()));
+
+    }
+   @DeleteMapping("/delete-attachments")
+    public ResponseEntity<?> deleteAttachments(@RequestBody DeleteDocumentsDto dto) {
+        try{
+            return ResponseEntity.ok(postService.deleteAttachments(dto.getPostId(), dto.getIds()));
+        }
+        catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+   }
 
 
 }

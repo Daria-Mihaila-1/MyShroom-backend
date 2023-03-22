@@ -2,9 +2,12 @@ package com.example.MyShroom_backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -43,4 +46,12 @@ public class PostEntity {
     @JoinColumn(name = "user_id",nullable = false)
     private UserEntity user;
 
+
+    @OneToMany(mappedBy = "post",cascade=CascadeType.ALL, orphanRemoval = true)
+    private List<DocumentEntity> attachments = new ArrayList<>();
+
+    public void setAttachments(List<DocumentEntity> attachments) {
+        this.attachments.clear();
+        this.attachments.addAll(attachments);
+    }
 }
