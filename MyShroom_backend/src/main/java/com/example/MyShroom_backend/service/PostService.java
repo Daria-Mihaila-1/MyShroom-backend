@@ -17,4 +17,6 @@ public interface PostService {
     PostDto addAttachments(Long id, List<DocumentDto> dto);
 
     PostDto deleteAttachments(Long id, List<Long> ids);
+
+    List<PostDto> getMyPosts(Long id);
 }

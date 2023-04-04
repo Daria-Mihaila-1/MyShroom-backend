@@ -144,4 +144,12 @@ public class PostServiceImpl implements  PostService{
             throw new EntityNotFoundException("Entity not found with id " + id);
         }
     }
+
+    @Override
+    public List<PostDto> getMyPosts(Long id) {
+        List<PostEntity> myPosts = postRepository.findAllByUserId(id);
+        return postMapper.entitiesToDtos(myPosts);
+    }
+
+
 }
