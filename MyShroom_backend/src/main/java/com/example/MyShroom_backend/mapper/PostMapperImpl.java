@@ -1,8 +1,6 @@
 package com.example.MyShroom_backend.mapper;
 
-import com.example.MyShroom_backend.dto.DocumentDto;
-import com.example.MyShroom_backend.dto.PostDto;
-import com.example.MyShroom_backend.dto.UploadPostDto;
+import com.example.MyShroom_backend.dto.*;
 import com.example.MyShroom_backend.entity.DocumentEntity;
 import com.example.MyShroom_backend.entity.PostEntity;
 import java.time.LocalDate;
@@ -12,6 +10,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.MyShroom_backend.entity.Type;
 import com.example.MyShroom_backend.entity.UserEntity;
 import com.example.MyShroom_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -24,6 +23,7 @@ public class PostMapperImpl implements PostMapper {
 
     private final UserRepository userRepository;
     private final DocumentMapper documentMapper;
+    private final UserMapper userMapper;
 
     @Override
     public PostDto entityToDto(PostEntity entity) {
@@ -34,14 +34,15 @@ public class PostMapperImpl implements PostMapper {
         Long id = null;
         String title = null;
         String mushroomType = null;
-        float latitude = 0.0f;
-        float longitude = 0.0f;
+        double latitude = 0.0f;
+        double longitude = 0.0f;
         String description = null;
         String img = null;
         String date = null;
         String time = null;
         List<DocumentDto> attachments = null;
-        Long userId = null;
+        UserDto user = null;
+        Type type = null;
 
         id = entity.getId();
         title = entity.getTitle();
@@ -56,9 +57,10 @@ public class PostMapperImpl implements PostMapper {
         date = entity.getDate().toString();
         time = entity.getTime().toString();
         attachments = documentMapper.entitiesToDtos(entity.getAttachments());
-        userId = entity.getUser().getId();
+        user = this.userMapper.entityToDto(entity.getUser());
+        type = entity.getType();
 
-        return new PostDto( id, title, mushroomType, latitude, longitude, description, img, date, time,attachments, userId);
+        return new PostDto( id, title, mushroomType, latitude, longitude, description, img, date, time,attachments, type, user);
     }
 
     @Override
@@ -84,9 +86,10 @@ public class PostMapperImpl implements PostMapper {
         postEntity.setTime(LocalTime.parse(dto.getTime()));
         List<DocumentEntity> attachments = documentMapper.dtosToEntities(dto.getAttachments());
         postEntity.setAttachments(attachments);
+        postEntity.setType(dto.getType());
 
 
-        Optional<UserEntity> optionalUser = userRepository.findById(dto.getUserId());
+        Optional<UserEntity> optionalUser = userRepository.findById(dto.getUser().getId());
         if (optionalUser.isPresent()) {
             UserEntity user = optionalUser.get();
             postEntity.setUser(user);
@@ -114,6 +117,7 @@ public class PostMapperImpl implements PostMapper {
         String imgEncoded = dto.getBase64Img();
         if ( imgEncoded != null ) {
             byte[] decodedImgBytes = Base64.getDecoder().decode(imgEncoded);
+            System.out.println(decodedImgBytes);
             postEntity.setImg(decodedImgBytes);
         }
         postEntity.setDate(LocalDate.now());
@@ -121,6 +125,7 @@ public class PostMapperImpl implements PostMapper {
 
         List<DocumentEntity> attachments = documentMapper.dtosToEntities(dto.getAttachments());
         postEntity.setAttachments(attachments);
+        postEntity.setType(dto.getType());
         Optional<UserEntity> optionalUser = userRepository.findById(dto.getUserId());
         if (optionalUser.isPresent()) {
             UserEntity user = optionalUser.get();
@@ -160,5 +165,42 @@ public class PostMapperImpl implements PostMapper {
         }
 
         return list;
+    }
+
+    @Override
+    public PostEntity updateDtoToEntity(UpdatePostDto dto) {
+        if ( dto == null ) {
+            return null;
+        }
+        PostEntity postEntity = new PostEntity();
+        postEntity.setId(dto.getId());
+        postEntity.setTitle( dto.getTitle() );
+        postEntity.setMushroomType( dto.getMushroomType() );
+        postEntity.setLatitude((float) dto.getLatitude());
+        postEntity.setLongitude((float) dto.getLongitude());
+        postEntity.setDescription( dto.getDescription() );
+        String imgEncoded = dto.getBase64Img();
+        if ( imgEncoded != null ) {
+            byte[] decodedImgBytes = Base64.getDecoder().decode(imgEncoded);
+            System.out.println(decodedImgBytes);
+            postEntity.setImg(decodedImgBytes);
+        }
+        postEntity.setDate(LocalDate.now());
+        postEntity.setTime(LocalTime.now());
+
+        List<DocumentEntity> attachments = documentMapper.dtosToEntities(dto.getAttachments());
+        postEntity.setAttachments(attachments);
+        postEntity.setType(dto.getType());
+        Optional<UserEntity> optionalUser = userRepository.findById(dto.getUserId());
+        if (optionalUser.isPresent()) {
+            UserEntity user = optionalUser.get();
+            postEntity.setUser(user);
+        }
+        else{
+            postEntity.setUser(null);
+        }
+
+
+        return postEntity;
     }
 }

@@ -25,10 +25,10 @@ public class PostEntity {
     private String mushroomType;
 
     @Column
-    private float latitude;
+    private double latitude;
 
     @Column
-    private float longitude;
+    private double longitude;
 
     @Column
     private String description;

@@ -1,6 +1,7 @@
 package com.example.MyShroom_backend.dto;
 
 import com.example.MyShroom_backend.entity.DocumentEntity;
+import com.example.MyShroom_backend.entity.Type;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,15 +22,11 @@ public class PostDto {
 
     private String title;
 
-
     private String mushroomType;
 
+    private double latitude;
 
-    private float latitude;
-
-
-    private float longitude;
-
+    private double longitude;
 
     private String description;
 
@@ -40,9 +37,8 @@ public class PostDto {
     private String time;
     private List<DocumentDto> attachments;
 
-    private Long userId;
-
-
+    private Type type;
+    private UserDto user;
 
 
 }

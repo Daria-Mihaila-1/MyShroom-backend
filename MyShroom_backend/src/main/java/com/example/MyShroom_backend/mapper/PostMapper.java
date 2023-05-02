@@ -1,6 +1,7 @@
 package com.example.MyShroom_backend.mapper;
 
 import com.example.MyShroom_backend.dto.PostDto;
+import com.example.MyShroom_backend.dto.UpdatePostDto;
 import com.example.MyShroom_backend.dto.UploadPostDto;
 import com.example.MyShroom_backend.entity.PostEntity;
 
@@ -16,4 +17,7 @@ public interface PostMapper {
 
     public List<PostEntity> dtosToEntities(List<PostDto> dtos);
     public List<PostDto> entitiesToDtos(List<PostEntity> entities);
+
+    public PostEntity updateDtoToEntity(UpdatePostDto newPostDto);
+
 }

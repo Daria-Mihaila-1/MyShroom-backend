@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity,Long> {
     public List<PostEntity> findAllByUserId(Long id);
+    public List<PostEntity> findAllByMushroomType(String mushroomType);
 }

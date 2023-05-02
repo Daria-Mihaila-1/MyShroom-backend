@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @Order(1000)
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
 
 
@@ -77,7 +77,7 @@ public class SecurityConfig {
                 .disable();
 
 
-        //every /auth/login or /auth/register are permitted)
+        //every /auth/login or /auth/register are permitted
 
         //all other requests must be authenticated ==>
         // you first have to authenticate yourself to perform the other requests

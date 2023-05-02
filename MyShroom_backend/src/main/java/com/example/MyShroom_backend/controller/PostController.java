@@ -1,9 +1,11 @@
 package com.example.MyShroom_backend.controller;
 
 import com.example.MyShroom_backend.dto.*;
+import com.example.MyShroom_backend.entity.Type;
 import com.example.MyShroom_backend.service.PostService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +18,7 @@ import java.util.List;
 @PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 @RequestMapping("/api/post")
 public class PostController {
     private final PostService postService;
@@ -44,7 +47,7 @@ public class PostController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updatePost(@RequestBody PostDto dto) {
+    public ResponseEntity<?> updatePost(@RequestBody UpdatePostDto dto) {
         try{
             return ResponseEntity.ok( postService.updatePost(dto));
         }
@@ -75,4 +78,8 @@ public class PostController {
    }
 
 
+   @GetMapping("get-post-types")
+    public ResponseEntity<?> getPostTypes() {
+        return ResponseEntity.ok(Type.values());
+   }
 }

@@ -25,10 +25,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+
             String jwt = jwtTokenService.getJwtFromCookies(request);
+            System.out.println("jtw ul:"+jwt);
             if (jwt != null && jwtTokenService.validateJwtToken(jwt)) {
                 String username = jwtTokenService.getUserNameFromToken(jwt);
-
+                jwtTokenService.getIdFromToken(jwt);
+                System.out.println("Jhahaha");
                 UserDetails userDetails = authService.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken authentication =
@@ -38,10 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("A mers");
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);
+            System.out.println("nu a mers");
         }
+
 
         filterChain.doFilter(request, response);
     }

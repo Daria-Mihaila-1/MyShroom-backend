@@ -7,11 +7,11 @@ import lombok.Data;
 @Data
 public class LoginResponseDto {
     private String token;
-    private Long id;
+
 
 @JsonCreator
-public LoginResponseDto(@JsonProperty("id") Long id, @JsonProperty("token") String token) {
-    this.id = id;
+public LoginResponseDto( @JsonProperty("token") String token) {
+
     this.token = token;
 
 

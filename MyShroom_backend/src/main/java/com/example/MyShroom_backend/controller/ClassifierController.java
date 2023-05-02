@@ -10,6 +10,7 @@ import ai.djl.modality.cv.ImageFactory;
 import ai.djl.repository.zoo.*;
 import ai.djl.translate.TranslateException;
 
+import ai.djl.util.Pair;
 import com.example.MyShroom_backend.Classifier.MyTranslator;
 import com.example.MyShroom_backend.dto.ClassifierRequestDto;
 import com.example.MyShroom_backend.dto.ClassifierResponseDto;
@@ -18,14 +19,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.*;
 
-import java.util.Base64;
-import java.util.List;
-
+import java.util.stream.Collectors;
 
 
-
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 @RestController
 @RequestMapping("/api/classifier")
 public class ClassifierController {
@@ -45,7 +44,7 @@ public class ClassifierController {
     @PostMapping("/predict")
     public ResponseEntity<?> predict(@RequestBody ClassifierRequestDto dto) throws IOException {
 
-
+        System.out.println(dto.getBase64Img());
         byte[] imgBytes = Base64.getDecoder().decode(dto.getBase64Img());;
         ByteArrayInputStream bis = new ByteArrayInputStream(imgBytes);
 
@@ -71,10 +70,26 @@ public class ClassifierController {
             System.out.println("image saved");
             // Perform inference on an input image
             Classifications result = predictor.predict(input);
-            System.out.println(result);
+            System.out.println("ceva" + result);
 
+
+            Map<String, Double> resultMap;
+            resultMap = result.topK()
+                    .stream()
+                    .collect(Collectors.toMap(Classifications.Classification::getClassName,Classifications.Classification::getProbability));
+
+
+            List<Map.Entry<String, Double>> list = new ArrayList<>(resultMap.entrySet());
+            list.sort(Map.Entry.comparingByValue());
+
+            Map<String, Double> newMap = new LinkedHashMap<>();
+            for (int index = 1; index < 4; index++) {
+                newMap.put(list.get(list.size()-index).getKey(), list.get(list.size()-index).getValue());
+            }
+
+            System.out.println(newMap);
             // Return the prediction as a JSON string
-            return ResponseEntity.ok(new ClassifierResponseDto("{\"scores\": " + result.getAsString() + "}"));
+            return ResponseEntity.ok(new ClassifierResponseDto(newMap));
 
         } catch (TranslateException e) {
             e.printStackTrace();

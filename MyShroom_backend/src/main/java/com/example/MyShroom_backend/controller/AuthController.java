@@ -15,18 +15,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
 
     private final UserRepository userRepository;
     private AuthenticationManager authenticationManager;
@@ -55,10 +53,10 @@ public class AuthController {
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-            ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(userDetails);
+            ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(userDetails,userDetails.getId());
             String tokenString = jwtCookie.toString().split(";")[0].split("=")[1];
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new LoginResponseDto(userDetails.getId(),tokenString));
+                    .body(new LoginResponseDto(tokenString));
         }
         return new ResponseEntity<>(
                 "Account with username " + dto.getUserName() + " doesn't exists",

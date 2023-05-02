@@ -12,7 +12,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    LoginResponseDto entityToResponseDto(UserEntity entity);
+
     @Mappings({
             @Mapping(source = "id", target = "id"),
             @Mapping(source = "firstName", target = "firstName"),

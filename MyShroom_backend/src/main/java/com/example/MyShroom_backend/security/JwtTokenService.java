@@ -11,14 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -30,8 +26,8 @@ public class JwtTokenService {
 
 
 
-    @Value("${application.loginCookieName}")
-    private String jwtCookie;
+//    @Value("${application.loginCookieName}")
+    private String jwtCookie = "token";
 
     private AuthService authService;
 
@@ -42,17 +38,18 @@ public class JwtTokenService {
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
         return cookie;
     }
-    public String generateToken(Authentication authentication) {
-
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
-        return Jwts.builder()
-                .setSubject((userPrincipal.getUsername()))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + 1000000000))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret.getBytes(StandardCharsets.UTF_8))
-                .compact();
-    }
+//    public String generateToken(Authentication authentication) {
+//
+//        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+//
+//        return Jwts.builder()
+//                .setSubject((userPrincipal.getUsername()))
+//                .setPayload(userPrincipal.getId().toString())
+//                .setIssuedAt(new Date())
+//                .setExpiration(new Date((new Date()).getTime() + 1000000000))
+//                .signWith(SignatureAlgorithm.HS512, jwtSecret.getBytes(StandardCharsets.UTF_8))
+//                .compact();
+//    }
 
 
     public boolean validateJwtToken(String authToken) {
@@ -76,30 +73,36 @@ public class JwtTokenService {
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, jwtCookie);
         if (cookie != null) {
+            System.out.println("cookie value is what:"+ cookie.getValue());
             return cookie.getValue();
         }
         return null;
     }
 
 
-    public String generateTokenFromUsername(String username) {
+    public String generateTokenFromUsernameAndId(String username, Long id) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .claim("role", "ROLE_USER")
+                .claim("id", id)
                 .setExpiration(new Date((new Date()).getTime() +  10000000))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
-        String jwt = generateTokenFromUsername(userPrincipal.getUsername());
+    public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal, Long id) {
+        String jwt = generateTokenFromUsernameAndId(userPrincipal.getUsername(), id);
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(12 * 60 * 60).httpOnly(true).build();
         return cookie;
     }
 
     public String getUserNameFromToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
+    public void getIdFromToken(String token){
+        System.out.println("id ul din token");
+        System.out.println(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody());
     }
 
 
