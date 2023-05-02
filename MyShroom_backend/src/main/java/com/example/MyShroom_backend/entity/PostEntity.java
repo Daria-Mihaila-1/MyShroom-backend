@@ -1,5 +1,6 @@
 package com.example.MyShroom_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Setter;
@@ -7,7 +8,9 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -50,8 +53,20 @@ public class PostEntity {
     @OneToMany(mappedBy = "post",cascade=CascadeType.ALL, orphanRemoval = true)
     private List<DocumentEntity> attachments = new ArrayList<>();
 
+    @Column
+    private  Type type;
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            },
+            mappedBy = "reported_posts")
+    @JsonIgnore
+    private Set<UserEntity> reporting_users = new HashSet<>();
+
     public void setAttachments(List<DocumentEntity> attachments) {
         this.attachments.clear();
         this.attachments.addAll(attachments);
     }
+
 }

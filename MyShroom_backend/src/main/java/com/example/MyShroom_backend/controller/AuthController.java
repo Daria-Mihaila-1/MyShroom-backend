@@ -74,8 +74,6 @@ public class AuthController {
                     "Account with username " + dto.getUserName() + " already exists",
                     HttpStatus.BAD_REQUEST);
         }
-
-        System.out.println(dto.getUserName());
         // Create new user's account
         UserEntity userEntity = new UserEntity();
         userEntity.setUserName(dto.getUserName());
