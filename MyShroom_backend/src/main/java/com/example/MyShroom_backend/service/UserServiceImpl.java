@@ -9,6 +9,7 @@ import com.example.MyShroom_backend.mapper.UserMapper;
 import com.example.MyShroom_backend.repository.PostRepository;
 import com.example.MyShroom_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -56,20 +57,26 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDto report(Long reporterId, PostEntity postEntity) {
+    public UserDto report(UserEntity reporterEntity, PostEntity postEntity) throws Exception {
         // Increase the strike count of the REPORTED user
+        System.out.println(postEntity.getUser().getId());
         this.increaseStrikeCount(postEntity.getUser().getId());
 
-        // Add a post to the list of reported posts for this REPORTER user
-        Optional<UserEntity> reporter = this.userRepository.findById(reporterId);
-        if (reporter.isPresent()) {
-            UserEntity reporterEntity = reporter.get();
-            Set<PostEntity> newReportedPosts = reporterEntity.getReported_posts();
-            newReportedPosts.add(postEntity);
-            reporterEntity.setReported_posts(newReportedPosts);
-            return this.userMapper.entityToDto(this.userRepository.save(reporterEntity));
-        }
-        throw new ObjectNotFoundException( new Object(), "reporter was not found my dude");
+            // Add a post to the list of reported posts for this REPORTER user
+            System.out.println(reporterEntity.getId());
+            List<PostEntity> existingReportedPosts = reporterEntity.getReportedPosts();
+
+            // Check if reporter hasn't already reported this post
+            if (!existingReportedPosts.contains(postEntity)) {
+                System.out.println("existing reported posts heree *****************************" + existingReportedPosts.stream().map(PostEntity::getId).toList());
+
+                reporterEntity.reportPost(postEntity);
+                return this.userMapper.entityToDto(this.userRepository.save(reporterEntity));
+            }
+            else {
+                System.out.println("e deja raprotat");
+                throw new Exception("reporter already reported this post");
+            }
     }
 
 
@@ -82,6 +89,21 @@ public class UserServiceImpl implements UserService{
         }
         else {
             throw new RuntimeException("User with given Id does not exist");
+        }
+    }
+
+    @Override
+    public void deleteReportedPost(PostEntity postEntity) {
+        Optional <List<UserEntity>> optionalUserEntities = this.userRepository.findAllByReportedPostsContaining(postEntity);
+        if (optionalUserEntities.isPresent()){
+            System.out.println("am gasit user care sa fi reportat aceste postari");
+            List<UserEntity> userEntities = optionalUserEntities.get();
+            System.out.println(userEntities.get(0).getReportedPosts());
+            userEntities.forEach( userEntity -> {
+                userEntity.getReportedPosts().remove(postEntity);
+            });
+            System.out.println(userEntities);
+            userRepository.saveAll(userEntities);
         }
     }
 

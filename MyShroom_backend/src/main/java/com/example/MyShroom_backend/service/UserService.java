@@ -15,7 +15,9 @@ public interface UserService {
     void increaseRank(Long id, Rank rank);
 
     UserDto increaseStrikeCount(Long id);
-    UserDto report(Long reporterId, PostEntity postEntity);
+    UserDto report(UserEntity userEntity, PostEntity postEntity) throws Exception;
 
     UserEntity findById(Long id) throws ObjectNotFoundException;
+
+    void deleteReportedPost(PostEntity postEntity);
 }

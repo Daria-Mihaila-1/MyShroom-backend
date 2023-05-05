@@ -1,9 +1,12 @@
 package com.example.MyShroom_backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -45,8 +48,11 @@ public class PostEntity {
     @Column
     private LocalTime time;
 
+
     @ManyToOne
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private UserEntity user;
 
 
@@ -55,14 +61,11 @@ public class PostEntity {
 
     @Column
     private  Type type;
+
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            },
-            mappedBy = "reported_posts")
-    @JsonIgnore
-    private Set<UserEntity> reporting_users = new HashSet<>();
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            mappedBy = "reportedPosts")
+    private List<UserEntity> reportingUsers = new ArrayList<>();
 
     public void setAttachments(List<DocumentEntity> attachments) {
         this.attachments.clear();

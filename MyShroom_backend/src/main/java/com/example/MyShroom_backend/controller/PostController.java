@@ -82,4 +82,10 @@ public class PostController {
     public ResponseEntity<?> getPostTypes() {
         return ResponseEntity.ok(Type.values());
    }
+
+
+    @GetMapping("/get-posts-not-reported-by/{id}")
+    public ResponseEntity<?> getPostsNotReportedBy(@PathVariable Long id) {
+        return ResponseEntity.ok(this.postService.getPostsNotReportedBy(id));
+    }
 }

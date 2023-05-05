@@ -5,15 +5,13 @@ import com.example.MyShroom_backend.entity.DocumentEntity;
 import com.example.MyShroom_backend.entity.PostEntity;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.example.MyShroom_backend.entity.Type;
 import com.example.MyShroom_backend.entity.UserEntity;
 import com.example.MyShroom_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.stereotype.Component;
 
 
@@ -23,7 +21,6 @@ public class PostMapperImpl implements PostMapper {
 
     private final UserRepository userRepository;
     private final DocumentMapper documentMapper;
-    private final UserMapper userMapper;
 
     @Override
     public PostDto entityToDto(PostEntity entity) {
@@ -41,7 +38,7 @@ public class PostMapperImpl implements PostMapper {
         String date = null;
         String time = null;
         List<DocumentDto> attachments = null;
-        UserDto user = null;
+        Long userId = null;
         Type type = null;
 
         id = entity.getId();
@@ -57,10 +54,10 @@ public class PostMapperImpl implements PostMapper {
         date = entity.getDate().toString();
         time = entity.getTime().toString();
         attachments = documentMapper.entitiesToDtos(entity.getAttachments());
-        user = this.userMapper.entityToDto(entity.getUser());
+        userId = entity.getUser().getId();
         type = entity.getType();
 
-        return new PostDto( id, title, mushroomType, latitude, longitude, description, img, date, time,attachments, type, user);
+        return new PostDto( id, title, mushroomType, latitude, longitude, description, img, date, time,attachments, type, userId);
     }
 
     @Override
@@ -89,7 +86,7 @@ public class PostMapperImpl implements PostMapper {
         postEntity.setType(dto.getType());
 
 
-        Optional<UserEntity> optionalUser = userRepository.findById(dto.getUser().getId());
+        Optional<UserEntity> optionalUser = userRepository.findById(dto.getUserId());
         if (optionalUser.isPresent()) {
             UserEntity user = optionalUser.get();
             postEntity.setUser(user);

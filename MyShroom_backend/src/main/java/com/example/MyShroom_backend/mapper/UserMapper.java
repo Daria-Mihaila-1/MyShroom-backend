@@ -10,17 +10,17 @@ import org.mapstruct.Mappings;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses=PostMapper.class)
 public interface UserMapper {
 
     @Mappings({
             @Mapping(source = "id", target = "id"),
             @Mapping(source = "firstName", target = "firstName"),
             @Mapping(source = "lastName", target = "lastName"),
-            @Mapping(source = "userName", target = "username"),
-            @Mapping(source = "password", target="password"),
+            @Mapping(source = "userName", target = "userName"),
             @Mapping(source = "rank", target = "rank"),
-            @Mapping(source = "strikes", target = "strikes")
+            @Mapping(source = "strikes", target = "strikes"),
+            @Mapping(source = "reportedPosts", target= "reportedPosts")
 
     })
     UserDto entityToDto(UserEntity entity);
@@ -29,10 +29,10 @@ public interface UserMapper {
             @Mapping(source = "id", target = "id"),
             @Mapping(source = "firstName", target = "firstName"),
             @Mapping(source = "lastName", target = "lastName"),
-            @Mapping(source = "username", target = "userName"),
-            @Mapping(source = "password", target="password"),
+            @Mapping(source = "userName", target = "userName"),
             @Mapping(source = "rank", target = "rank"),
-            @Mapping(source = "strikes", target = "strikes")
+            @Mapping(source = "strikes", target = "strikes"),
+            @Mapping(source = "reportedPosts", target= "reportedPosts")
 
     })
 

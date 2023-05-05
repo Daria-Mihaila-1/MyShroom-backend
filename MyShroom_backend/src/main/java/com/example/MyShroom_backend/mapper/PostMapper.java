@@ -12,10 +12,9 @@ public interface PostMapper {
     public PostDto entityToDto(PostEntity entity);
     public PostEntity dtoToEntity(PostDto dto);
 
-
     PostEntity uploadDtoToEntity(UploadPostDto dto);
 
-    public List<PostEntity> dtosToEntities(List<PostDto> dtos);
+    public List<PostEntity> dtosToEntities(List<PostDto> dtozs);
     public List<PostDto> entitiesToDtos(List<PostEntity> entities);
 
     public PostEntity updateDtoToEntity(UpdatePostDto newPostDto);

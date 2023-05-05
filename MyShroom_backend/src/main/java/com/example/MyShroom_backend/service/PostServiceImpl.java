@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.print.Doc;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,11 @@ public class PostServiceImpl implements  PostService{
     public List<PostDto> findAll() {
         List<PostEntity> entities = postRepository.findAll();
         return postMapper.entitiesToDtos(entities);
+    }
+
+    @Override
+    public Optional<PostEntity> findById(Long id) {
+        return this.postRepository.findById(id);
     }
 
     @Override
@@ -65,6 +71,7 @@ public class PostServiceImpl implements  PostService{
         Optional<PostEntity> optionalPostEntity = postRepository.findById(id);
         if (optionalPostEntity.isPresent()){
             PostEntity postEntity = optionalPostEntity.get();
+            this.userService.deleteReportedPost(postEntity);
             postRepository.deleteById(id);
             return postMapper.entityToDto(postEntity);
         }
@@ -157,5 +164,20 @@ public class PostServiceImpl implements  PostService{
     }
 
 
+    @Override
+    public List<PostDto> getPostsNotReportedBy(Long id) {
+        // find the UserEntity who is reporting right now
+        UserEntity userEntity = this.userService.findById(id);
+        if (userEntity.getReportedPosts().size() != 0) {
+            // if he has reported some ==> return all posts that don't have their Id in the list of reported posts of the current reported user
+            return this.postMapper.entitiesToDtos(this.postRepository.findAllByIdNotIn(
+                    userEntity.getReportedPosts()
+                            .stream()
+                            .map(PostEntity::getId)
+                            .toList()));
+        }
+        //if the userEntity didn't report anything until now return all posts
+        else return this.postMapper.entitiesToDtos(this.postRepository.findAll());
+    }
 
 }

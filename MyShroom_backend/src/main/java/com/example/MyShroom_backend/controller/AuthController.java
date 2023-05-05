@@ -39,17 +39,20 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequestDto dto) {
-        System.out.println("da sunt in login doamna");
+
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(dto.getUserName(), dto.getPassword());
 
-        Optional<UserEntity> userEntity = userRepository.findByUserName((String) token.getPrincipal());
-        if (userEntity.isPresent()) {
-
-            System.out.println(dto.getUserName() + " " + dto.getPassword());
+        Optional<UserEntity> optionalUserEntity = userRepository.findByUserName((String) token.getPrincipal());
+        if (optionalUserEntity.isPresent()) {
+            UserEntity userEntity = optionalUserEntity.get();
+            if (userEntity.getStrikes() > 3) {
+                return new ResponseEntity<>(
+                        "You have more than 3 reported posts...your account has been blocked",
+                        HttpStatus.FORBIDDEN);
+            }
             Authentication authentication = authenticationManager.authenticate(token);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println(authentication.getAuthorities());
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 

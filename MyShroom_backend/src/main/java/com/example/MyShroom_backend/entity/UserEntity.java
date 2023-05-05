@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Entity
 @Data
@@ -37,21 +35,20 @@ public class UserEntity {
     @Column
     private int strikes;
 
-    @OneToMany(cascade = CascadeType.ALL)
-
-    @JoinColumn(name="user_id")
-    private Set<PostEntity> posts = new TreeSet<PostEntity>();
+    @OneToMany(mappedBy = "user",cascade=CascadeType.ALL, orphanRemoval = true)
+    private List<PostEntity> posts = new ArrayList<>();
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    }
-    )
-    @JoinTable(name = "posts_reported_by_users",joinColumns = { @JoinColumn(name = "user_id") },
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "posts_reported_by_users",
+            joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "post_id") }
     )
-    private Set<PostEntity> reported_posts = new HashSet<>();
+    private List<PostEntity> reportedPosts = new ArrayList<>();
+
+    public void reportPost(PostEntity postEntity) {
+        this.reportedPosts.add(postEntity);
+    }
 
 
 }
