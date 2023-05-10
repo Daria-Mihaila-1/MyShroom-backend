@@ -5,7 +5,7 @@ import org.springframework.http.ResponseCookie;
 import com.example.MyShroom_backend.dto.LoginRequestDto;
 import com.example.MyShroom_backend.dto.LoginResponseDto;
 import com.example.MyShroom_backend.dto.RegisterRequestDto;
-import com.example.MyShroom_backend.entity.Rank;
+import com.example.MyShroom_backend.enums.Rank;
 import com.example.MyShroom_backend.entity.UserEntity;
 import com.example.MyShroom_backend.repository.UserRepository;
 import com.example.MyShroom_backend.security.JwtTokenService;

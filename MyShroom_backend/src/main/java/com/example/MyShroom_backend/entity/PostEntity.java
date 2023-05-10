@@ -1,19 +1,16 @@
 package com.example.MyShroom_backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.example.MyShroom_backend.enums.MushroomType;
+import com.example.MyShroom_backend.enums.Type;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -28,7 +25,7 @@ public class PostEntity {
     private String title;
 
     @Column
-    private String mushroomType;
+    private MushroomType mushroomType;
 
     @Column
     private double latitude;
@@ -60,12 +57,15 @@ public class PostEntity {
     private List<DocumentEntity> attachments = new ArrayList<>();
 
     @Column
-    private  Type type;
+    private Type type;
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             mappedBy = "reportedPosts")
     private List<UserEntity> reportingUsers = new ArrayList<>();
+
+    @Column(name = "predicted_mushroom_type")
+    private MushroomType predicted_mushroom_type;
 
     public void setAttachments(List<DocumentEntity> attachments) {
         this.attachments.clear();

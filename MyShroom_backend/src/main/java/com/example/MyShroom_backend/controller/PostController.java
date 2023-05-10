@@ -1,11 +1,11 @@
 package com.example.MyShroom_backend.controller;
 
 import com.example.MyShroom_backend.dto.*;
-import com.example.MyShroom_backend.entity.Type;
+import com.example.MyShroom_backend.enums.MushroomType;
+import com.example.MyShroom_backend.enums.Type;
 import com.example.MyShroom_backend.service.PostService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -82,7 +82,10 @@ public class PostController {
     public ResponseEntity<?> getPostTypes() {
         return ResponseEntity.ok(Type.values());
    }
-
+  @GetMapping("get-mushroom-types")
+    public ResponseEntity<?> getMushroomTypes() {
+        return ResponseEntity.ok(MushroomType.values());
+   }
 
     @GetMapping("/get-posts-not-reported-by/{id}")
     public ResponseEntity<?> getPostsNotReportedBy(@PathVariable Long id) {

@@ -1,4 +1,4 @@
-package com.example.MyShroom_backend.entity;
+package com.example.MyShroom_backend.enums;
 
 public enum Rank {
     BEGINNER,

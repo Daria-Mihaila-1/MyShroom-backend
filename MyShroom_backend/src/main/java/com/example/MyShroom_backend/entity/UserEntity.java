@@ -1,7 +1,7 @@
 package com.example.MyShroom_backend.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.MyShroom_backend.enums.Rank;
 import jakarta.persistence.*;
 import lombok.Data;
 

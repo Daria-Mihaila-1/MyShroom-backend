@@ -7,11 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-import com.example.MyShroom_backend.entity.Type;
+import com.example.MyShroom_backend.enums.MushroomType;
+import com.example.MyShroom_backend.enums.Type;
 import com.example.MyShroom_backend.entity.UserEntity;
 import com.example.MyShroom_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.stereotype.Component;
 
 
@@ -30,7 +30,7 @@ public class PostMapperImpl implements PostMapper {
 
         Long id = null;
         String title = null;
-        String mushroomType = null;
+        MushroomType mushroomType = null;
         double latitude = 0.0f;
         double longitude = 0.0f;
         String description = null;
@@ -196,7 +196,6 @@ public class PostMapperImpl implements PostMapper {
         else{
             postEntity.setUser(null);
         }
-
 
         return postEntity;
     }

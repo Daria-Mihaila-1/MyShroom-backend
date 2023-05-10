@@ -1,27 +1,22 @@
 package com.example.MyShroom_backend.service;
 
-import com.example.MyShroom_backend.dto.DocumentDto;
-import com.example.MyShroom_backend.dto.PostDto;
-import com.example.MyShroom_backend.dto.UpdatePostDto;
-import com.example.MyShroom_backend.dto.UploadPostDto;
+import com.example.MyShroom_backend.dto.*;
 import com.example.MyShroom_backend.entity.DocumentEntity;
 import com.example.MyShroom_backend.entity.PostEntity;
-import com.example.MyShroom_backend.entity.Rank;
+import com.example.MyShroom_backend.enums.MushroomType;
+import com.example.MyShroom_backend.enums.Rank;
 import com.example.MyShroom_backend.entity.UserEntity;
 import com.example.MyShroom_backend.mapper.DocumentMapper;
 import com.example.MyShroom_backend.mapper.PostMapper;
 import com.example.MyShroom_backend.repository.DocumentRepository;
 import com.example.MyShroom_backend.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.print.Doc;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -32,6 +27,7 @@ public class PostServiceImpl implements  PostService{
     private final PostMapper postMapper;
     private final DocumentMapper documentMapper;
 
+    private final ClassifierService classifierService;
     private final UserService userService;
     @Override
     public List<PostDto> findAll() {
@@ -48,7 +44,6 @@ public class PostServiceImpl implements  PostService{
     public PostDto addPost(UploadPostDto newDTo) {
         try {
             PostEntity newEntity = postMapper.uploadDtoToEntity(newDTo);
-            PostEntity newPostEntity = postRepository.save(newEntity);
 
             // Increase Rank of user if necessary
             UserEntity userOfPost = this.userService.findById(newDTo.getUserId());
@@ -58,8 +53,19 @@ public class PostServiceImpl implements  PostService{
             else if (this.postRepository.findAllByUserId(userOfPost.getId()).size() == 10 && userOfPost.getRank() == Rank.INTERMEDIATE) {
                 this.userService.increaseRank(userOfPost.getId(), Rank.EXPERT);
             }
+
+            // Set the highest predicted score label as the predicted_mushroom_type of the post for further improvements
+            Map<String, Double> scores= this.classifierService.predict(new ClassifierRequestDto(newDTo.getBase64Img()));
+
+            Map.Entry<String,Double> firstScore = scores.entrySet().iterator().next();
+            if (firstScore.getValue() > 65){
+                MushroomType mushroomType= MushroomType.valueOf(firstScore.getKey().toUpperCase());
+                newEntity.setPredicted_mushroom_type(mushroomType);
+            }
+
+            PostEntity newPostEntity = postRepository.save(newEntity);
+
             return (postMapper.entityToDto(newPostEntity));
-            //TODO: add check the photo with the classifier and add it to one of the tables
         }
         catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
@@ -88,7 +94,17 @@ public class PostServiceImpl implements  PostService{
         if (optionalPostEntity.isPresent()){
 
             PostEntity postEntity = this.postMapper.updateDtoToEntity(newPostDto);
+            // Set the highest predicted score label as the predicted_mushroom_type of the post for further improvements
+            Map<String, Double> scores= this.classifierService.predict(new ClassifierRequestDto(this.postMapper.entityToDto(postEntity).getBase64Img()));
+
+            Map.Entry<String,Double> firstScore = scores.entrySet().iterator().next();
+            if (firstScore.getValue() > 65){
+                MushroomType mushroomType= MushroomType.valueOf(firstScore.getKey().toUpperCase());
+                postEntity.setPredicted_mushroom_type(mushroomType);
+            }
+
             postRepository.save(postEntity);
+
             PostEntity updatedPostEntity = postRepository.findById(postEntity.getId()).get();
             return postMapper.entityToDto(updatedPostEntity);
         }

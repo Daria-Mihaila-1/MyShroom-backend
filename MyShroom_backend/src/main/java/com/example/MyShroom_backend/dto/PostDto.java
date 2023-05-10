@@ -1,14 +1,12 @@
 package com.example.MyShroom_backend.dto;
 
-import com.example.MyShroom_backend.entity.Type;
+import com.example.MyShroom_backend.enums.MushroomType;
+import com.example.MyShroom_backend.enums.Type;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 @Data
 public class PostDto {
@@ -18,7 +16,7 @@ public class PostDto {
 
     private String title;
 
-    private String mushroomType;
+    private MushroomType mushroomType;
 
     private double latitude;
 
@@ -39,7 +37,7 @@ public class PostDto {
     @JsonCreator
     public PostDto(@JsonProperty("id") Long id,
                          @JsonProperty("title") String title,
-                         @JsonProperty("mushroomType") String mushroomType,
+                         @JsonProperty("mushroomType") MushroomType mushroomType,
                          @JsonProperty("latitude") double latitude,
                          @JsonProperty("longitude") double longitude,
                          @JsonProperty("description") String description,

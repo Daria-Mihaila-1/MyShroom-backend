@@ -1,6 +1,7 @@
 package com.example.MyShroom_backend.dto;
 
-import com.example.MyShroom_backend.entity.Type;
+import com.example.MyShroom_backend.enums.MushroomType;
+import com.example.MyShroom_backend.enums.Type;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -12,7 +13,7 @@ public class UploadPostDto {
 
     private String title;
 
-    private String mushroomType;
+    private MushroomType mushroomType;
 
     private double latitude;
 
@@ -26,7 +27,7 @@ public class UploadPostDto {
     private Long userId;
     private Type type;
     @JsonCreator
-    public UploadPostDto(@JsonProperty("title") String title, @JsonProperty("mushroomType") String mushroomType,
+    public UploadPostDto(@JsonProperty("title") String title, @JsonProperty("mushroomType") MushroomType mushroomType,
                          @JsonProperty("latitude") double latitude, @JsonProperty("longitude") double longitude,
                          @JsonProperty("description") String description, @JsonProperty("base64Img") String base64Img
             , @JsonProperty("attachments") List<DocumentDto> attachments
