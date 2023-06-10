@@ -53,8 +53,6 @@ public class PostEntity {
     private UserEntity user;
 
 
-    @OneToMany(mappedBy = "post",cascade=CascadeType.ALL, orphanRemoval = true)
-    private List<DocumentEntity> attachments = new ArrayList<>();
 
     @Column
     private Type type;
@@ -67,9 +65,6 @@ public class PostEntity {
     @Column(name = "predicted_mushroom_type")
     private MushroomType predicted_mushroom_type;
 
-    public void setAttachments(List<DocumentEntity> attachments) {
-        this.attachments.clear();
-        this.attachments.addAll(attachments);
-    }
+
 
 }

@@ -23,14 +23,12 @@ public class UploadPostDto {
 
     private String base64Img;
 
-    private List<DocumentDto> attachments;
     private Long userId;
     private Type type;
     @JsonCreator
     public UploadPostDto(@JsonProperty("title") String title, @JsonProperty("mushroomType") MushroomType mushroomType,
                          @JsonProperty("latitude") double latitude, @JsonProperty("longitude") double longitude,
                          @JsonProperty("description") String description, @JsonProperty("base64Img") String base64Img
-            , @JsonProperty("attachments") List<DocumentDto> attachments
             , @JsonProperty("userId") Long userId,  @JsonProperty("type") Type type ){
         System.out.println("la upload post dto in constructor");
         this.title = title;
@@ -39,7 +37,6 @@ public class UploadPostDto {
         this.longitude = longitude;
         this.description = description;
         this.base64Img = base64Img;
-        this.attachments = attachments;
         this.userId = userId;
         this.type = type;
     }

@@ -1,14 +1,11 @@
 package com.example.MyShroom_backend.service;
 
 import com.example.MyShroom_backend.dto.*;
-import com.example.MyShroom_backend.entity.DocumentEntity;
 import com.example.MyShroom_backend.entity.PostEntity;
 import com.example.MyShroom_backend.enums.MushroomType;
 import com.example.MyShroom_backend.enums.Rank;
 import com.example.MyShroom_backend.entity.UserEntity;
-import com.example.MyShroom_backend.mapper.DocumentMapper;
 import com.example.MyShroom_backend.mapper.PostMapper;
-import com.example.MyShroom_backend.repository.DocumentRepository;
 import com.example.MyShroom_backend.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -23,9 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostServiceImpl implements  PostService {
     private final PostRepository postRepository;
-    private final DocumentRepository documentRepository;
     private final PostMapper postMapper;
-    private final DocumentMapper documentMapper;
 
     private final ClassifierService classifierService;
     private final UserService userService;
@@ -110,62 +105,7 @@ public class PostServiceImpl implements  PostService {
         }
     }
 
-    @Override
-    public PostDto addAttachments(Long id, List<DocumentDto> dtos) {
-        List<DocumentEntity> documents = documentMapper.dtosToEntities(dtos);
-        Optional<PostEntity> optionalPostEntity = postRepository.findById(id);
-        if (optionalPostEntity.isPresent()) {
-            PostEntity postEntity = optionalPostEntity.get();
-            for (DocumentEntity entity1 : documents) {
-                entity1.setPost(postEntity);
-            }
-            documentRepository.saveAll(documents);
-            Optional<PostEntity> secondOptionalPostEntity = postRepository.findById(id);
-            PostEntity entity = secondOptionalPostEntity.get();
-            return postMapper.entityToDto(entity);
-        } else {
-            throw new EntityNotFoundException("Entity not found with id " + id);
-        }
-    }
 
-    @Override
-    @Transactional
-    public PostDto deleteAttachments(Long id, List<Long> ids) {
-
-        Optional<PostEntity> optionalPostEntity = postRepository.findById(id);
-
-        if (optionalPostEntity.isPresent()) {
-            PostEntity postEntity = optionalPostEntity.get();
-            System.out.println("am ajuns aicia");
-            List<DocumentEntity> existingDocEntities = documentRepository.findAllByPost(postEntity);
-            List<Long> existingDocIds = existingDocEntities
-                    .stream()
-                    .map(DocumentEntity::getId)
-                    .toList();
-            System.out.println("am filtrat atachmenturile ca sa fie doar idurile lor");
-
-            if (existingDocIds.containsAll(ids)) {
-                // Delete the attachments from the documents repo
-                List<DocumentEntity> remainingDocEntities = existingDocEntities
-                        .stream()
-                        .filter(obj -> !ids.contains(obj.getId()))
-                        .toList();
-
-                System.out.println(remainingDocEntities.size());
-                postEntity.setAttachments(remainingDocEntities);
-                postRepository.save(postEntity);
-                documentRepository.deleteAllById(ids);
-                Optional<PostEntity> secondOptionalPostEntity = postRepository.findById(id);
-                postEntity = secondOptionalPostEntity.get();
-                return postMapper.entityToDto(postEntity);
-
-            } else {
-                throw new EntityNotFoundException("Post does not have all given attachements");
-            }
-        } else {
-            throw new EntityNotFoundException("Entity not found with id " + id);
-        }
-    }
 
     @Override
     public List<PostDto> getMyPosts(Long id) {

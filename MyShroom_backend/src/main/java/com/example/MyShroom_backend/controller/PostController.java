@@ -56,21 +56,6 @@ public class PostController {
         }
     }
 
-    @PutMapping("/add-attachments")
-    public ResponseEntity<?> addAttachments(@RequestBody DocumentsDto dto) {
-        return ResponseEntity.ok(postService.addAttachments(dto.getPostId(), dto.getDocuments()));
-
-    }
-   @DeleteMapping("/delete-attachments")
-    public ResponseEntity<?> deleteAttachments(@RequestBody DeleteDocumentsDto dto) {
-        try{
-            return ResponseEntity.ok(postService.deleteAttachments(dto.getPostId(), dto.getIds()));
-        }
-        catch (EntityNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-
-   }
 
    @GetMapping("/get-my-posts/{id}")
     public ResponseEntity<?> getMyPosts(@PathVariable Long id) {

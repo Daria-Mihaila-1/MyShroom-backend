@@ -24,7 +24,6 @@ public class UpdatePostDto {
 
     private String base64Img;
 
-    private List<DocumentDto> attachments;
 
     private Type type;
     private Long userId;
@@ -36,7 +35,6 @@ public class UpdatePostDto {
                          @JsonProperty("longitude") double longitude,
                          @JsonProperty("description") String description,
                          @JsonProperty("base64Img") String base64Img,
-                         @JsonProperty("attachments") List<DocumentDto> attachments,
                          @JsonProperty("type") Type type,
                          @JsonProperty("userId") Long userId){
         System.out.println("la update post dto in constructor");
@@ -47,7 +45,6 @@ public class UpdatePostDto {
         this.longitude = longitude;
         this.description = description;
         this.base64Img = base64Img;
-        this.attachments = attachments;
         this.userId = userId;
         this.type = type;
     }

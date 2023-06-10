@@ -1,12 +1,10 @@
 package com.example.MyShroom_backend.mapper;
 
 import com.example.MyShroom_backend.dto.*;
-import com.example.MyShroom_backend.entity.DocumentEntity;
 import com.example.MyShroom_backend.entity.PostEntity;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,15 +22,12 @@ import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 
-import static java.lang.System.in;
-
 
 @Component
 @AllArgsConstructor
 public class PostMapperImpl implements PostMapper {
 
     private final UserRepository userRepository;
-    private final DocumentMapper documentMapper;
 
     @Override
     public PostDto entityToDto(PostEntity entity) {
@@ -49,7 +44,6 @@ public class PostMapperImpl implements PostMapper {
         String img = null;
         String date = null;
         String time = null;
-        List<DocumentDto> attachments = null;
         Long userId = null;
         Type type = null;
 
@@ -65,11 +59,10 @@ public class PostMapperImpl implements PostMapper {
         }
         date = entity.getDate().toString();
         time = entity.getTime().toString();
-        attachments = documentMapper.entitiesToDtos(entity.getAttachments());
         userId = entity.getUser().getId();
         type = entity.getType();
 
-        return new PostDto( id, title, mushroomType, latitude, longitude, description, img, date, time,attachments, type, userId);
+        return new PostDto( id, title, mushroomType, latitude, longitude, description, img, date, time, type, userId);
     }
 
     @Override
@@ -93,8 +86,6 @@ public class PostMapperImpl implements PostMapper {
         }
         postEntity.setDate(LocalDate.parse(dto.getDate()));
         postEntity.setTime(LocalTime.parse(dto.getTime()));
-        List<DocumentEntity> attachments = documentMapper.dtosToEntities(dto.getAttachments());
-        postEntity.setAttachments(attachments);
         postEntity.setType(dto.getType());
 
 
@@ -134,8 +125,6 @@ public class PostMapperImpl implements PostMapper {
         postEntity.setDate(LocalDate.now());
         postEntity.setTime(LocalTime.now());
 
-        List<DocumentEntity> attachments = documentMapper.dtosToEntities(dto.getAttachments());
-        postEntity.setAttachments(attachments);
         postEntity.setType(dto.getType());
         Optional<UserEntity> optionalUser = userRepository.findById(dto.getUserId());
         if (optionalUser.isPresent()) {
@@ -219,8 +208,6 @@ public class PostMapperImpl implements PostMapper {
         postEntity.setDate(LocalDate.now());
         postEntity.setTime(LocalTime.now());
 
-        List<DocumentEntity> attachments = documentMapper.dtosToEntities(dto.getAttachments());
-        postEntity.setAttachments(attachments);
         postEntity.setType(dto.getType());
         Optional<UserEntity> optionalUser = userRepository.findById(dto.getUserId());
         if (optionalUser.isPresent()) {
