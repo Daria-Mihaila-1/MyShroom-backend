@@ -5,6 +5,7 @@ import com.example.MyShroom_backend.enums.Rank;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -34,6 +35,11 @@ public class UserEntity {
 
     @Column
     private int strikes;
+
+    @Column
+    private LocalDate registerDate;
+    @Column
+    private int profileImageIndex;
 
     @OneToMany(mappedBy = "user",cascade=CascadeType.ALL, orphanRemoval = true)
     private List<PostEntity> posts = new ArrayList<>();

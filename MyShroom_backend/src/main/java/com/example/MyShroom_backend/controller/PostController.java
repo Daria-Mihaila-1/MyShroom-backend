@@ -91,4 +91,8 @@ public class PostController {
     public ResponseEntity<?> getPostsNotReportedBy(@PathVariable Long id) {
         return ResponseEntity.ok(this.postService.getPostsNotReportedBy(id));
     }
+    @GetMapping("/get-posts-reported-by/{id}")
+    public ResponseEntity<?> getPostsReportedBy(@PathVariable Long id) {
+        return ResponseEntity.ok(this.postService.getPostsReportedBy(id));
+    }
 }

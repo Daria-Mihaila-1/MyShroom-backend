@@ -32,6 +32,7 @@ import java.util.Optional;
 @RequestMapping("/api/user")
 public class UserController {
 
+
     private final UserService userService;
     private final JwtTokenService jwtTokenService;
 
@@ -70,6 +71,16 @@ public class UserController {
             }
             else throw new Exception("this post does not exist in our repository");
         } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
+        try{
+            return ResponseEntity.ok(this.userService.deleteAccount(id));
+        }
+        catch(Exception e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }

@@ -3,9 +3,17 @@ package com.example.MyShroom_backend.mapper;
 import com.example.MyShroom_backend.dto.*;
 import com.example.MyShroom_backend.entity.DocumentEntity;
 import com.example.MyShroom_backend.entity.PostEntity;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.List;
 
 import com.example.MyShroom_backend.enums.MushroomType;
 import com.example.MyShroom_backend.enums.Type;
@@ -13,6 +21,10 @@ import com.example.MyShroom_backend.entity.UserEntity;
 import com.example.MyShroom_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import javax.imageio.ImageIO;
+
+import static java.lang.System.in;
 
 
 @Component
@@ -114,6 +126,8 @@ public class PostMapperImpl implements PostMapper {
         String imgEncoded = dto.getBase64Img();
         if ( imgEncoded != null ) {
             byte[] decodedImgBytes = Base64.getDecoder().decode(imgEncoded);
+
+            System.out.println(scaleToSize(decodedImgBytes, 300, 300));
             System.out.println(decodedImgBytes);
             postEntity.setImg(decodedImgBytes);
         }
@@ -134,6 +148,26 @@ public class PostMapperImpl implements PostMapper {
 
 
         return postEntity;
+    }
+
+    public byte[] scaleToSize(byte[] imgFile, int width, int height) {
+
+        ByteArrayInputStream in = new ByteArrayInputStream(imgFile);
+        try {
+            BufferedImage img = ImageIO.read(in);
+            Image scaledImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            System.out.println(bufferedImage.getGraphics());
+            bufferedImage.getGraphics().drawImage(scaledImage, 0, 0, new Color(0,0,0), null);
+
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            System.out.println(bufferedImage.getGraphics());
+            ImageIO.write(bufferedImage, "jpg", buffer);
+
+            return buffer.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
