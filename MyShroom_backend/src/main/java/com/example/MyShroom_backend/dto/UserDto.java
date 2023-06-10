@@ -5,6 +5,7 @@ import com.example.MyShroom_backend.enums.Rank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,5 +25,9 @@ public class UserDto {
     private int strikes;
 
     private List<PostDto> reportedPosts;
+
+    private String registerDate;
+
+    private int profileImageIndex;
 
 }

@@ -26,4 +26,6 @@ public interface PostService {
     List<PostDto> getMyPosts(Long id);
 
     List<PostDto> getPostsNotReportedBy(Long id);
+
+    List<PostDto> getPostsReportedBy(Long id);
 }

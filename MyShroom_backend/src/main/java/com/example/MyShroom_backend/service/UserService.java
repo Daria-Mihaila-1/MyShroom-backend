@@ -19,4 +19,6 @@ public interface UserService {
     UserEntity findById(Long id) throws ObjectNotFoundException;
 
     void deleteReportedPost(PostEntity postEntity);
+
+    UserDto deleteAccount(Long id);
 }

@@ -7,6 +7,7 @@ import com.example.MyShroom_backend.entity.UserEntity;
 import com.example.MyShroom_backend.mapper.UserMapper;
 import com.example.MyShroom_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto report(UserEntity reporterEntity, PostEntity postEntity) throws Exception {
         // Increase the strike count of the REPORTED user
-        System.out.println(postEntity.getUser().getId());
+        System.out.println("******" + postEntity.getUser().getId());
         this.increaseStrikeCount(postEntity.getUser().getId());
 
             // Add a post to the list of reported posts for this REPORTER user
@@ -90,10 +91,9 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteReportedPost(PostEntity postEntity) {
         Optional <List<UserEntity>> optionalUserEntities = this.userRepository.findAllByReportedPostsContaining(postEntity);
-        if (optionalUserEntities.isPresent()){
+        if (optionalUserEntities.isPresent() && !optionalUserEntities.isEmpty()){
             System.out.println("am gasit user care sa fi reportat aceste postari");
             List<UserEntity> userEntities = optionalUserEntities.get();
-            System.out.println(userEntities.get(0).getReportedPosts());
             userEntities.forEach( userEntity -> {
                 userEntity.getReportedPosts().remove(postEntity);
             });
@@ -101,6 +101,15 @@ public class UserServiceImpl implements UserService{
             userRepository.saveAll(userEntities);
         }
     }
-
+    @Override
+    public UserDto deleteAccount(Long id) {
+        Optional <UserEntity> optionalUserEntity = this.userRepository.findById(id);
+        if(optionalUserEntity.isPresent()) {
+            UserEntity userEntity = optionalUserEntity.get();
+            this.userRepository.deleteById(id);
+            return userMapper.entityToDto(userEntity);
+        }
+        return null;
+    }
 
 }

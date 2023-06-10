@@ -20,7 +20,9 @@ public interface UserMapper {
             @Mapping(source = "userName", target = "userName"),
             @Mapping(source = "rank", target = "rank"),
             @Mapping(source = "strikes", target = "strikes"),
-            @Mapping(source = "reportedPosts", target= "reportedPosts")
+            @Mapping(source = "reportedPosts", target= "reportedPosts"),
+            @Mapping(source = "registerDate", target= "registerDate"),
+            @Mapping(source = "profileImageIndex", target= "profileImageIndex")
 
     })
     UserDto entityToDto(UserEntity entity);
@@ -32,7 +34,9 @@ public interface UserMapper {
             @Mapping(source = "userName", target = "userName"),
             @Mapping(source = "rank", target = "rank"),
             @Mapping(source = "strikes", target = "strikes"),
-            @Mapping(source = "reportedPosts", target= "reportedPosts")
+            @Mapping(source = "reportedPosts", target= "reportedPosts"),
+            @Mapping(source = "registerDate", target= "registerDate"),
+            @Mapping(source = "profileImageIndex", target= "profileImageIndex")
 
     })
 

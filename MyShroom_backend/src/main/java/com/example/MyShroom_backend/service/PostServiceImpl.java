@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements  PostService{
+public class PostServiceImpl implements  PostService {
     private final PostRepository postRepository;
     private final DocumentRepository documentRepository;
     private final PostMapper postMapper;
@@ -29,6 +29,7 @@ public class PostServiceImpl implements  PostService{
 
     private final ClassifierService classifierService;
     private final UserService userService;
+
     @Override
     public List<PostDto> findAll() {
         List<PostEntity> entities = postRepository.findAll();
@@ -39,7 +40,7 @@ public class PostServiceImpl implements  PostService{
     public Optional<PostEntity> findById(Long id) {
         return this.postRepository.findById(id);
     }
-
+//TODO: scale img to fit a square properly
     @Override
     public PostDto addPost(UploadPostDto newDTo) {
         try {
@@ -47,59 +48,56 @@ public class PostServiceImpl implements  PostService{
 
             // Increase Rank of user if necessary
             UserEntity userOfPost = this.userService.findById(newDTo.getUserId());
-            if (this.postRepository.findAllByUserId(userOfPost.getId()).size() == 4 && userOfPost.getRank() == Rank.BEGINNER) {
+            if (this.postRepository.findAllByUserId(userOfPost.getId()).size() == 5 && userOfPost.getRank() == Rank.BEGINNER) {
                 this.userService.increaseRank(userOfPost.getId(), Rank.INTERMEDIATE);
-            }
-            else if (this.postRepository.findAllByUserId(userOfPost.getId()).size() == 10 && userOfPost.getRank() == Rank.INTERMEDIATE) {
+            } else if (this.postRepository.findAllByUserId(userOfPost.getId()).size() == 15 && userOfPost.getRank() == Rank.INTERMEDIATE) {
                 this.userService.increaseRank(userOfPost.getId(), Rank.EXPERT);
             }
 
             // Set the highest predicted score label as the predicted_mushroom_type of the post for further improvements
-            Map<String, Double> scores= this.classifierService.predict(new ClassifierRequestDto(newDTo.getBase64Img()));
+            Map<String, Double> scores = this.classifierService.predict(new ClassifierRequestDto(newDTo.getBase64Img()));
 
-            Map.Entry<String,Double> firstScore = scores.entrySet().iterator().next();
-            if (firstScore.getValue() > 65){
-                MushroomType mushroomType= MushroomType.valueOf(firstScore.getKey().toUpperCase());
+            Map.Entry<String, Double> firstScore = scores.entrySet().iterator().next();
+            if (firstScore.getValue() > 65) {
+                MushroomType mushroomType = MushroomType.valueOf(firstScore.getKey().toUpperCase());
                 newEntity.setPredicted_mushroom_type(mushroomType);
             }
 
             PostEntity newPostEntity = postRepository.save(newEntity);
 
             return (postMapper.entityToDto(newPostEntity));
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         }
-        }
+    }
 
     @Override
     public PostDto deletePost(Long id) throws EntityNotFoundException {
         Optional<PostEntity> optionalPostEntity = postRepository.findById(id);
-        if (optionalPostEntity.isPresent()){
+        if (optionalPostEntity.isPresent()) {
             PostEntity postEntity = optionalPostEntity.get();
             this.userService.deleteReportedPost(postEntity);
             postRepository.deleteById(id);
             return postMapper.entityToDto(postEntity);
-        }
-        else {
+        } else {
             throw new EntityNotFoundException("Entity not found with id " + id);
         }
 
     }
 
     @Override
-    public PostDto updatePost( UpdatePostDto newPostDto) throws EntityNotFoundException{
+    public PostDto updatePost(UpdatePostDto newPostDto) throws EntityNotFoundException {
 
         Optional<PostEntity> optionalPostEntity = postRepository.findById(newPostDto.getId());
-        if (optionalPostEntity.isPresent()){
+        if (optionalPostEntity.isPresent()) {
 
             PostEntity postEntity = this.postMapper.updateDtoToEntity(newPostDto);
             // Set the highest predicted score label as the predicted_mushroom_type of the post for further improvements
-            Map<String, Double> scores= this.classifierService.predict(new ClassifierRequestDto(this.postMapper.entityToDto(postEntity).getBase64Img()));
+            Map<String, Double> scores = this.classifierService.predict(new ClassifierRequestDto(this.postMapper.entityToDto(postEntity).getBase64Img()));
 
-            Map.Entry<String,Double> firstScore = scores.entrySet().iterator().next();
-            if (firstScore.getValue() > 65){
-                MushroomType mushroomType= MushroomType.valueOf(firstScore.getKey().toUpperCase());
+            Map.Entry<String, Double> firstScore = scores.entrySet().iterator().next();
+            if (firstScore.getValue() > 65) {
+                MushroomType mushroomType = MushroomType.valueOf(firstScore.getKey().toUpperCase());
                 postEntity.setPredicted_mushroom_type(mushroomType);
             }
 
@@ -107,8 +105,7 @@ public class PostServiceImpl implements  PostService{
 
             PostEntity updatedPostEntity = postRepository.findById(postEntity.getId()).get();
             return postMapper.entityToDto(updatedPostEntity);
-        }
-        else {
+        } else {
             throw new EntityNotFoundException("Entity not found with id " + newPostDto.getId());
         }
     }
@@ -117,17 +114,16 @@ public class PostServiceImpl implements  PostService{
     public PostDto addAttachments(Long id, List<DocumentDto> dtos) {
         List<DocumentEntity> documents = documentMapper.dtosToEntities(dtos);
         Optional<PostEntity> optionalPostEntity = postRepository.findById(id);
-        if (optionalPostEntity.isPresent()){
+        if (optionalPostEntity.isPresent()) {
             PostEntity postEntity = optionalPostEntity.get();
-            for (DocumentEntity entity1 : documents){
+            for (DocumentEntity entity1 : documents) {
                 entity1.setPost(postEntity);
             }
             documentRepository.saveAll(documents);
             Optional<PostEntity> secondOptionalPostEntity = postRepository.findById(id);
             PostEntity entity = secondOptionalPostEntity.get();
             return postMapper.entityToDto(entity);
-        }
-        else {
+        } else {
             throw new EntityNotFoundException("Entity not found with id " + id);
         }
     }
@@ -148,11 +144,11 @@ public class PostServiceImpl implements  PostService{
                     .toList();
             System.out.println("am filtrat atachmenturile ca sa fie doar idurile lor");
 
-            if (existingDocIds.containsAll(ids)){
+            if (existingDocIds.containsAll(ids)) {
                 // Delete the attachments from the documents repo
                 List<DocumentEntity> remainingDocEntities = existingDocEntities
                         .stream()
-                        .filter(obj -> ! ids.contains(obj.getId()))
+                        .filter(obj -> !ids.contains(obj.getId()))
                         .toList();
 
                 System.out.println(remainingDocEntities.size());
@@ -163,12 +159,10 @@ public class PostServiceImpl implements  PostService{
                 postEntity = secondOptionalPostEntity.get();
                 return postMapper.entityToDto(postEntity);
 
-            }
-            else {
+            } else {
                 throw new EntityNotFoundException("Post does not have all given attachements");
             }
-        }
-        else {
+        } else {
             throw new EntityNotFoundException("Entity not found with id " + id);
         }
     }
@@ -196,4 +190,12 @@ public class PostServiceImpl implements  PostService{
         else return this.postMapper.entitiesToDtos(this.postRepository.findAll());
     }
 
+    @Override
+    public List<PostDto> getPostsReportedBy(Long id) {
+        UserEntity userEntity = this.userService.findById(id);
+        if (userEntity.getReportedPosts().size() != 0) {
+            return this.postMapper.entitiesToDtos(userEntity.getReportedPosts());
+        }
+        return null;
+    }
 }

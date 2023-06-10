@@ -13,6 +13,7 @@ import com.example.MyShroom_backend.service.UserDetailsImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 @RestController
@@ -45,21 +47,27 @@ public class AuthController {
         Optional<UserEntity> optionalUserEntity = userRepository.findByUserName((String) token.getPrincipal());
         if (optionalUserEntity.isPresent()) {
             UserEntity userEntity = optionalUserEntity.get();
-            if (userEntity.getStrikes() > 3) {
+            if (userEntity.getStrikes() > 4) {
                 return new ResponseEntity<>(
-                        "You have more than 3 reported posts...your account has been blocked",
+                        "You have more than 4 reported posts...your account has been blocked due to them",
                         HttpStatus.FORBIDDEN);
             }
-            Authentication authentication = authenticationManager.authenticate(token);
+            try {
+                Authentication authentication = authenticationManager.authenticate(token);
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-            ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(userDetails,userDetails.getId());
-            String tokenString = jwtCookie.toString().split(";")[0].split("=")[1];
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new LoginResponseDto(tokenString));
+                ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(userDetails, userDetails.getId());
+                String tokenString = jwtCookie.toString().split(";")[0].split("=")[1];
+                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                        .body(new LoginResponseDto(tokenString));
+            }catch (BadCredentialsException e) {
+                return new ResponseEntity<>(
+                        "Incorrect password. Please try again.",
+                        HttpStatus.BAD_REQUEST);
+            }
         }
         return new ResponseEntity<>(
                 "Account with username " + dto.getUserName() + " doesn't exists",
@@ -84,6 +92,8 @@ public class AuthController {
         userEntity.setFirstName(dto.getFirstName());
         userEntity.setLastName(dto.getLastName());
         userEntity.setRank(Rank.BEGINNER);
+        userEntity.setRegisterDate(LocalDate.now());
+        userEntity.setProfileImageIndex(dto.getProfileImageIndex());
 
         userRepository.save(userEntity);
 
