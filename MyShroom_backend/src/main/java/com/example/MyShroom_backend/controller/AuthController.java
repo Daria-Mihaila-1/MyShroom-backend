@@ -76,8 +76,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser( @RequestBody RegisterRequestDto dto) {
-        System.out.println("da sunt in register doamna");
-
         Optional<UserEntity> optionalUserEntity = userRepository.findByUserName(dto.getUserName());
 
         if (optionalUserEntity.isPresent()) {
@@ -102,7 +100,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {
-        System.out.println("da am dat logout doamna");
         ResponseCookie cookie = jwtTokenService.generateCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
     }

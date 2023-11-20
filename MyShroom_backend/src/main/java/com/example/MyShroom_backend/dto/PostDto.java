@@ -45,7 +45,6 @@ public class PostDto {
                            @JsonProperty("time") String time,
                          @JsonProperty("type") Type type,
                          @JsonProperty("userId") Long userId){
-        System.out.println("la update post dto in constructor");
         this.id = id;
         this.title = title;
         this.mushroomType = mushroomType;

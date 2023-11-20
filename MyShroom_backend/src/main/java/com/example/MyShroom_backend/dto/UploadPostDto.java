@@ -30,7 +30,6 @@ public class UploadPostDto {
                          @JsonProperty("latitude") double latitude, @JsonProperty("longitude") double longitude,
                          @JsonProperty("description") String description, @JsonProperty("base64Img") String base64Img
             , @JsonProperty("userId") Long userId,  @JsonProperty("type") Type type ){
-        System.out.println("la upload post dto in constructor");
         this.title = title;
         this.mushroomType = mushroomType;
         this.latitude = latitude;

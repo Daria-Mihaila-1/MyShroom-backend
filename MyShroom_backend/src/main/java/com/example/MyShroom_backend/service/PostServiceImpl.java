@@ -40,6 +40,7 @@ public class PostServiceImpl implements  PostService {
     public PostDto addPost(UploadPostDto newDTo) {
         try {
             PostEntity newEntity = postMapper.uploadDtoToEntity(newDTo);
+            PostEntity newPostEntity = postRepository.save(newEntity);
 
             // Increase Rank of user if necessary
             UserEntity userOfPost = this.userService.findById(newDTo.getUserId());
@@ -58,7 +59,6 @@ public class PostServiceImpl implements  PostService {
                 newEntity.setPredicted_mushroom_type(mushroomType);
             }
 
-            PostEntity newPostEntity = postRepository.save(newEntity);
 
             return (postMapper.entityToDto(newPostEntity));
         } catch (RuntimeException e) {

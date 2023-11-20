@@ -36,7 +36,6 @@ public class ClassifierServiceImpl implements ClassifierService {
         Criteria<Image, Classifications> criteria = Criteria.builder()
                 .setTypes(Image.class, Classifications.class)
                 .optModelPath(Paths.get("MyShroom_backend/src/main/java/com/example/MyShroom_backend/Classifier/models/traced_model_resnet34_a4_8237.pt"))
-//                .optModelName("traced_model_resnet34_with_weighted_sampler_a4_6728.pt")
                 .optEngine("PyTorch")
                 .optTranslator(translator)
                 .build();
@@ -66,7 +65,6 @@ public class ClassifierServiceImpl implements ClassifierService {
                 newMap.put(list.get(list.size() - index).getKey(), list.get(list.size() - index).getValue());
             }
 
-            System.out.println(newMap);
             // Return the prediction as a JSON string
             return newMap;
         } catch (

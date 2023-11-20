@@ -19,7 +19,7 @@ public class MushroomImgController {
         return ResponseEntity.ok(this.mushroomImgService.findAll());
     }
 
-    @PostMapping("add-img")
+    @PostMapping("/add-img")
     public ResponseEntity<?> addImg(@RequestBody AddMushroomImgDto dto) {
 
         return ResponseEntity.ok(this.mushroomImgService.addImg(dto));
@@ -28,36 +28,18 @@ public class MushroomImgController {
     @GetMapping("/get-all-by-mushroomType/{mushroomType}")
     public ResponseEntity<?> getAllByMushroomType(@PathVariable String mushroomType) {
         String mushroomTypeUpperCase = mushroomType.toUpperCase();
-        MushroomType foundMushroomType = null;
-        switch (mushroomTypeUpperCase) {
-            case "AGARICUS" :
-                foundMushroomType = MushroomType.AGARICUS;
-                break;
-            case "AMANITA" :
-                foundMushroomType = MushroomType.AMANITA;
-                break;
-            case "BOLETUS" :
-                foundMushroomType = MushroomType.BOLETUS;
-                break;
-            case "CORTINARIUS" :
-                foundMushroomType = MushroomType.CORTINARIUS;
-                break;
-            case "ENTOLOMA" :
-                foundMushroomType = MushroomType.ENTOLOMA;
-                break;
-            case "HYGROCYBE" :
-                foundMushroomType = MushroomType.HYGROCYBE;
-                break;
-            case "LACTARIUS" :
-                foundMushroomType = MushroomType.LACTARIUS;
-                break;
-            case "RUSSULA" :
-                foundMushroomType = MushroomType.RUSSULA;
-                break;
-            case "SUILLUS" :
-                foundMushroomType = MushroomType.SUILLUS;
-                break;
-        }
+        MushroomType foundMushroomType = switch (mushroomTypeUpperCase) {
+            case "AGARICUS" -> MushroomType.AGARICUS;
+            case "AMANITA" -> MushroomType.AMANITA;
+            case "BOLETUS" -> MushroomType.BOLETUS;
+            case "CORTINARIUS" -> MushroomType.CORTINARIUS;
+            case "ENTOLOMA" -> MushroomType.ENTOLOMA;
+            case "HYGROCYBE" -> MushroomType.HYGROCYBE;
+            case "LACTARIUS" -> MushroomType.LACTARIUS;
+            case "RUSSULA" -> MushroomType.RUSSULA;
+            case "SUILLUS" -> MushroomType.SUILLUS;
+            default -> null;
+        };
         return ResponseEntity.ok(this.mushroomImgService.findAllByMushroomType(foundMushroomType));
     }
 }

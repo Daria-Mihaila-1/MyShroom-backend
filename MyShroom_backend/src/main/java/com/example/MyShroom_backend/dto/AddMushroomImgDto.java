@@ -9,6 +9,7 @@ import lombok.Data;
 public class AddMushroomImgDto {
     private MushroomType mushroomType;
     private boolean poisonous;
+
     private String base64Img;
 
 

@@ -19,7 +19,7 @@ public class MushroomImgEntity {
     @Column
     boolean poisonous;
 
-    @Column
+    @Column(unique = true)
     byte[] img;
 
 

@@ -23,8 +23,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<UserDto> findAll() {
-        List<UserDto> userDtos = userMapper.entitiesToDtos(userRepository.findAll());
-        return userDtos;
+        return userMapper.entitiesToDtos(userRepository.findAll());
     }
 
     @Override
@@ -55,22 +54,18 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto report(UserEntity reporterEntity, PostEntity postEntity) throws Exception {
         // Increase the strike count of the REPORTED user
-        System.out.println("******" + postEntity.getUser().getId());
         this.increaseStrikeCount(postEntity.getUser().getId());
 
             // Add a post to the list of reported posts for this REPORTER user
-            System.out.println(reporterEntity.getId());
             List<PostEntity> existingReportedPosts = reporterEntity.getReportedPosts();
 
             // Check if reporter hasn't already reported this post
             if (!existingReportedPosts.contains(postEntity)) {
-                System.out.println("existing reported posts heree *****************************" + existingReportedPosts.stream().map(PostEntity::getId).toList());
 
                 reporterEntity.reportPost(postEntity);
                 return this.userMapper.entityToDto(this.userRepository.save(reporterEntity));
             }
             else {
-                System.out.println("e deja raprotat");
                 throw new Exception("reporter already reported this post");
             }
     }
@@ -92,12 +87,10 @@ public class UserServiceImpl implements UserService{
     public void deleteReportedPost(PostEntity postEntity) {
         Optional <List<UserEntity>> optionalUserEntities = this.userRepository.findAllByReportedPostsContaining(postEntity);
         if (optionalUserEntities.isPresent() && !optionalUserEntities.isEmpty()){
-            System.out.println("am gasit user care sa fi reportat aceste postari");
             List<UserEntity> userEntities = optionalUserEntities.get();
             userEntities.forEach( userEntity -> {
                 userEntity.getReportedPosts().remove(postEntity);
             });
-            System.out.println(userEntities);
             userRepository.saveAll(userEntities);
         }
     }
